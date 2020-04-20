@@ -151,11 +151,11 @@ const styles = StyleSheet.create({
         onpressbottom(title, description, index){
           this.setState( () => {
             const { favorites } = this.state;
-            const val = favorites.filter( vendor => vendor['index'] === index )
+            const val = favorites.filter( vendor => vendor['title'] === title && vendor['description'] === description )
                 return {
                   favorites: val.length > 0
-                    ? favorites.filter(title => title['index'] !== index )
-                    : [...favorites, {index,title,description}],
+                    ? favorites.filter(titles => titles['title'] !== title && titles['description'] !== description)
+                    : [...favorites, {index,title,description, selected:true}],
                     
                 };
               
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
                               {item.book_details[0].title}
                             </Text> 
                             <TouchableOpacity style={styles.positionHeard} onPress={() => { this.refis(item.book_details[0].title, item.book_details[0].description,index ) }}>
-                               <Icon name="heart" size={15} color={List.filter(tree => tree['index'] === index ).length > 0 ? 'red': 'black'} />
+                               <Icon name="heart" size={15} color={List.filter(tree => tree['title'] === item.book_details[0].title && tree['description'] === item.book_details[0].description && tree['selected'] === true ).length > 0 ? 'red': 'black'} />
                             </TouchableOpacity>
                           </View>   
                           <View>   
