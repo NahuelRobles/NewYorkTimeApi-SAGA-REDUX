@@ -1,10 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet,SafeAreaView, TouchableOpacity, Image, TextInput, FlatList} from 'react-native';
+import {View, Text, StyleSheet,SafeAreaView, TouchableOpacity, Image, TextInput, FlatList, Platform} from 'react-native';
 import { connect } from 'react-redux';
 import { actors} from '../reducers/user';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { configureStore } from '@reduxjs/toolkit';
 import { set } from 'react-native-reanimated';
+
+import { NativeModules } from 'react-native';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -95,7 +98,8 @@ const styles = StyleSheet.create({
             refresh: false,
             refreshTag: false,
             FilterTagList:[], 
-            Emty: true
+            Emty: true,
+            rgb: ''
             
           };
         }
@@ -129,7 +133,12 @@ const styles = StyleSheet.create({
             refresh: !this.state.refresh
            })
 
-           const backgroundColor = 'rgb(' + (Math.random() * 256) + ',' + (Math.random() * 256) + ',' + (Math.random() * 256) + ')'
+           this.ObtColor();
+           console.log("TheColorIs", this.state.rgb)
+           { Platform.OS === 'ios' 
+            ? backgroundColor = 'rgb(' + (Math.random() * 256) + ',' + (Math.random() * 256) + ',' + (Math.random() * 256) + ')'
+            : backgroundColor = this.state.rgb} 
+
            const values = value.nativeEvent.text
            const ExisTag = this.state.FilterTagList.filter( vendor => vendor[0].toUpperCase() === values.toUpperCase() )
            if (ExisTag.length === 0){
@@ -175,7 +184,15 @@ const styles = StyleSheet.create({
            })
         }
 
-        componentDidMount(){
+        async ObtColor() {
+          if (Platform.OS === "android"){
+            TestModule = NativeModules.Test
+            await TestModule.TakeColor( (err) => {console.log(err)}, (msg) => this.state.rgb=msg );
+          }
+          
+        }
+         componentDidMount(){
+          this.ObtColor();
           const { fetchBooksintoApi} = this.props;
           fetchBooksintoApi();
 
